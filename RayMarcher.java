@@ -8,7 +8,7 @@ public class RayMarcher
 	// Get the normal vector by finite difference
 	private static Vector3d normal(SDF obj, Vector3d p)
 	{
-		final double eps = 1e-6;
+		final double eps = 1e-5;
 
 		double d = obj.dist(p);
 		var xMove = new Vector3d(p);
@@ -26,7 +26,7 @@ public class RayMarcher
 	private static SDF rayMarch(Vector3d p, Vector3d dir)
 	{
 		final int maxStepCnt = 200;
-		final double minStepSize = 0.001;
+		final double minStepSize = 1e-3;
 
 		for (int i = 0; i < maxStepCnt; ++i)
 		{
@@ -59,7 +59,7 @@ public class RayMarcher
 
 		var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
 		var box = new Box(new Vector3d(0.4, 0.7, 0.5));
-		objs.add(new Translate(new Union(sphere, box), new Vector3d(-3, -3, 6)));
+		objs.add(new Translate(new DisplaceSin(new Union(sphere, box), 12, 0.15), new Vector3d(-2, -2, 4)));
 		objs.add(new Translate(new Intersect(sphere, box), new Vector3d(0, 0, 6)));
 		objs.add(new Translate(new Subtract(sphere, box), new Vector3d(3, 3, 6)));
 
