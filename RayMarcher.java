@@ -93,5 +93,6 @@ public class RayMarcher
 		}
 
 		StdDraw.show();
+		StdDraw.save("output.png");
 	}
 }
