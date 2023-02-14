@@ -2,9 +2,9 @@ import javax.vecmath.*;
 
 public class Box implements SDF
 {
-	private final double a;
+	private final Vector3d a;
 
-	public Box(double a)
+	public Box(Vector3d a)
 	{
 		this.a = a;
 	}
@@ -14,7 +14,7 @@ public class Box implements SDF
 	{
 		var pDiff = new Vector3d(p);
 		pDiff.absolute();
-		pDiff.x -= a; pDiff.y -= a; pDiff.z -= a;
+		pDiff.sub(a);
 		var pOut = new Vector3d(pDiff);
 		pOut.clampMin(0);
 
