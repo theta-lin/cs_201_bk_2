@@ -39,7 +39,7 @@ public class RayMarcher
 
 	private static RayRes ray(Vector3d orig, Vector3d dir, double maxDist)
 	{
-		final int maxStepCnt = 80;
+		final int maxStepCnt = 60;
 		final double minStepSize = 1e-3;
 
 		Vector3d p = new Vector3d(orig);
@@ -78,8 +78,13 @@ public class RayMarcher
 		StdDraw.setYscale(0, height);
 		StdDraw.clear(StdDraw.BLACK);
 
-		var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
-		var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+		var sphere = new Sphere(1);
+		var fbm = new FBM(sphere, 5, 1.0, 0.5,
+				          0.05, 0.1, 0.4,
+				          666);
+		objs.add(new Translate(fbm, new Vector3d(0, 0, 1.8)));
+
+		//var box = new Translate(new Box(new Vector3d(0.4, 0.7, 0.5)), new Vector3d(0.6, -0.4, -0.3));
 
 		//objs.add(new Translate(new Rotate(box, new Vector3d(Math.toRadians(30), Math.toRadians(0), Math.toRadians(30))), new Vector3d(0, 0, 3)));
 		//objs.add(new Translate(new DisplaceSin(new SUnion(sphere, box, 0.5), 12, 0.15), new Vector3d(0, 0, 3)));
@@ -90,9 +95,11 @@ public class RayMarcher
 		//var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
 		//objs.add(new Subtract(grid, nearBox));
 
-		objs.add(new Translate(new SUnion(sphere, box, 0.5), new Vector3d(0, 0, 3)));
+		//objs.add(new Translate(new SUnion(sphere, box, 0.5), new Vector3d(0, 0, 3)));
 
 		var lightOrigin = new Vector3d(3, 3, -3);
+
+		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < width; ++i)
 		{
@@ -138,6 +145,8 @@ public class RayMarcher
 
 		StdDraw.show();
 		StdDraw.save("output.png");
-		System.out.println("Done!");
+
+		long endTime = System.currentTimeMillis();
+		System.out.println("Rendering done in: " + (endTime - startTime) / 1000.0 +" s");
 	}
 }
