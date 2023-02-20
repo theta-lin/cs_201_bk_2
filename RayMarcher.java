@@ -58,14 +58,15 @@ public class RayMarcher
 		StdDraw.clear(StdDraw.BLACK);
 
 		//var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
-		//var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+		var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+		objs.add(new Translate(new Rotate(box, new Vector3d(Math.toRadians(30), Math.toRadians(0), Math.toRadians(30))), new Vector3d(0, 0, 3)));
 		//objs.add(new Translate(new DisplaceSin(new Union(sphere, box), 12, 0.15), new Vector3d(-2, -2, 4)));
 		//objs.add(new Translate(new Intersect(sphere, box), new Vector3d(0, 0, 6)));
 		//objs.add(new Translate(new Subtract(sphere, box), new Vector3d(3, 3, 6)));
 
-		var nearBox = new Box(new Vector3d(1.5, 1.5, 1.5));
-		var grid = new Scale(new RandSphGrid(0.5), 0.5);
-		objs.add(new Subtract(grid, nearBox));
+		//var nearBox = new Box(new Vector3d(1.5, 1.5, 1.5));
+		//var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
+		//objs.add(new Subtract(grid, nearBox));
 
 		var lightOrigin = new Vector3d(10, 10, -10);
 
@@ -73,7 +74,7 @@ public class RayMarcher
 		{
 			for (int j = 0; j < height; ++j)
 			{
-				double x = ((i + 0.5) / width * 2.0 - 1) * Math.tan(fov / 2.0) * width / height;
+				double x = -((i + 0.5) / width * 2.0 - 1) * Math.tan(fov / 2.0) * width / height;
 				double y = ((j + 0.5) / height * 2.0 - 1) * Math.tan(fov / 2.0);
 				var p = new Vector3d(0.0, 0.0, 0.0);
 				var dir = new Vector3d(x, y, 1.0);
