@@ -23,26 +23,47 @@ public class RayMarcher
 		return normal;
 	}
 
-	private static SDF rayMarch(Vector3d p, Vector3d dir)
+	private static class RayRes
 	{
-		final int maxStepCnt = 50;
+		Vector3d p;
+		public SDF obj;
+		public double shadow;
+
+		public RayRes(Vector3d p, SDF obj, double shadow)
+		{
+			this.p = p;
+			this.obj = obj;
+			this.shadow = shadow;
+		}
+	}
+
+	private static RayRes ray(Vector3d orig, Vector3d dir, double maxDist)
+	{
+		final int maxStepCnt = 80;
 		final double minStepSize = 1e-3;
 
-		for (int i = 0; i < maxStepCnt; ++i)
+		Vector3d p = new Vector3d(orig);
+		double dSum = 0;
+		double shadow = Double.POSITIVE_INFINITY; // Scaled minimum distance to objects for soft shadow
+		for (int i = 0; dSum < maxDist && i < maxStepCnt; ++i)
 		{
 			double d = Double.POSITIVE_INFINITY;
 			for (var obj : objs)
 			{
 				d = Math.min(d, obj.dist(p));
-				if (d <= 0) return obj;
+				if (d <= 0) return new RayRes(p, obj, 0);
 			}
+			shadow = Math.min(shadow, d / dSum);
+
 			d = Math.max(d, minStepSize);
+			dSum += d;
 
 			var step = new Vector3d(dir);
 			step.scale(d);
 			p.add(step);
 		}
-		return null;
+
+		return new RayRes(p, null, shadow);
 	}
 
 	public static void main(String[] args)
@@ -58,17 +79,17 @@ public class RayMarcher
 		StdDraw.clear(StdDraw.BLACK);
 
 		//var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
-		var box = new Box(new Vector3d(0.4, 0.7, 0.5));
-		objs.add(new Translate(new Rotate(box, new Vector3d(Math.toRadians(30), Math.toRadians(0), Math.toRadians(30))), new Vector3d(0, 0, 3)));
+		//var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+		//objs.add(new Translate(new Rotate(box, new Vector3d(Math.toRadians(30), Math.toRadians(0), Math.toRadians(30))), new Vector3d(0, 0, 3)));
 		//objs.add(new Translate(new DisplaceSin(new Union(sphere, box), 12, 0.15), new Vector3d(-2, -2, 4)));
 		//objs.add(new Translate(new Intersect(sphere, box), new Vector3d(0, 0, 6)));
 		//objs.add(new Translate(new Subtract(sphere, box), new Vector3d(3, 3, 6)));
 
-		//var nearBox = new Box(new Vector3d(1.5, 1.5, 1.5));
-		//var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
-		//objs.add(new Subtract(grid, nearBox));
+		var nearBox = new Box(new Vector3d(4, 4, 4));
+		var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
+		objs.add(new Subtract(grid, nearBox));
 
-		var lightOrigin = new Vector3d(10, 10, -10);
+		var lightOrigin = new Vector3d(3, 3, -3);
 
 		for (int i = 0; i < width; ++i)
 		{
@@ -80,15 +101,30 @@ public class RayMarcher
 				var dir = new Vector3d(x, y, 1.0);
 				dir.normalize();
 
-				SDF hit = rayMarch(p, dir);
-				if (hit != null)
+				var hit = ray(p, dir, Double.POSITIVE_INFINITY);
+				if (hit.obj != null)
 				{
-					var lightDir = new Vector3d(p);
-					lightDir.sub(lightOrigin);
+					var lightDir = new Vector3d(lightOrigin);
+					lightDir.sub(hit.p);
+					double lightDist = lightDir.length();
 					lightDir.normalize();
-					var n = normal(hit, p);
+					var n = normal(hit.obj, hit.p);
 
-					double intensity = Math.max(-lightDir.dot(n), 0.0);
+					// Amount of offset to be applied at the intersection point,
+					// so that the shadow ray will not be stuck in the object.
+					final double hitOffsetScale = 1e-3;
+					var hitOffset = new Vector3d(n);
+					hitOffset.scale(hitOffsetScale);
+					hit.p.add(hitOffset);
+					var lightHit = ray(hit.p, lightDir, lightDist);
+
+					// Soft shadow by dimming the light according to the shortest distance to the light
+					// when travelling along the shadow ray.
+					final double shadowHardness = 10.0;
+					double intensity = 0.0;
+					if (lightHit.obj == null) intensity = Math.max(lightDir.dot(n), 0.0);
+					intensity *= Math.min(lightHit.shadow * shadowHardness, 1.0);
+
 					StdDraw.setPenColor((int) (255 * intensity), (int) (255 * intensity), (int) (255 * intensity));
 					// StdDraw.setPenColor(Math.min(Math.max((int) ((n.x / 2 + 1) * 255), 0), 255), Math.min(Math.max((int) ((n.y / 2 + 1) * 255), 0), 255), 0);
 					//StdDraw.setPenColor(StdDraw.WHITE);
