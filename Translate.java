@@ -20,12 +20,4 @@ public class Translate implements SDF
 		pTrans.sub(trans);
 		return sdf.dist(pTrans);
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		var pTrans = new Vector3d(p);
-		pTrans.sub(trans);
-		return sdf.distMin(pTrans);
-	}
 }

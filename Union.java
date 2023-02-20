@@ -17,10 +17,4 @@ public class Union implements SDF
 	{
 		return Math.min(a.dist(p), b.dist(p));
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		return Math.min(a.distMin(p), b.distMin(p));
-	}
 }

@@ -23,10 +23,4 @@ public class DisplaceSin implements SDF
 	{
 		return sdf.dist(p) + disp(p);
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		return sdf.distMin(p) + disp(p);
-	}
 }

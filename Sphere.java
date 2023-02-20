@@ -15,10 +15,4 @@ public class Sphere implements SDF
 		var d = new Vector3d(p);
 		return d.length() - r;
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		return dist(p);
-	}
 }

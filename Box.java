@@ -20,10 +20,4 @@ public class Box implements SDF
 
 		return pOut.length() + Math.min(Math.max(Math.max(pDiff.x, pDiff.y), pDiff.z), 0);
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		return dist(p);
-	}
 }

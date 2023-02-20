@@ -17,10 +17,4 @@ public class Intersect implements SDF
 	{
 		return Math.max(a.dist(p), b.dist(p));
 	}
-
-	@Override
-	public double distMin(Vector3d p)
-	{
-		return Math.max(a.dist(p), b.dist(p));
-	}
 }
