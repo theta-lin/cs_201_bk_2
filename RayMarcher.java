@@ -78,16 +78,19 @@ public class RayMarcher
 		StdDraw.setYscale(0, height);
 		StdDraw.clear(StdDraw.BLACK);
 
-		//var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
-		//var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+		var sphere = new Translate(new Sphere(1), new Vector3d(-0.6, 0.4, 0.3));
+		var box = new Box(new Vector3d(0.4, 0.7, 0.5));
+
 		//objs.add(new Translate(new Rotate(box, new Vector3d(Math.toRadians(30), Math.toRadians(0), Math.toRadians(30))), new Vector3d(0, 0, 3)));
-		//objs.add(new Translate(new DisplaceSin(new Union(sphere, box), 12, 0.15), new Vector3d(-2, -2, 4)));
+		//objs.add(new Translate(new DisplaceSin(new SUnion(sphere, box, 0.5), 12, 0.15), new Vector3d(0, 0, 3)));
 		//objs.add(new Translate(new Intersect(sphere, box), new Vector3d(0, 0, 6)));
 		//objs.add(new Translate(new Subtract(sphere, box), new Vector3d(3, 3, 6)));
 
-		var nearBox = new Box(new Vector3d(4, 4, 4));
-		var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
-		objs.add(new Subtract(grid, nearBox));
+		//var nearBox = new Box(new Vector3d(4, 4, 4));
+		//var grid = new Rotate(new RandSphGrid(0.5), new Vector3d(0, Math.toRadians(45), Math.toRadians(30)));
+		//objs.add(new Subtract(grid, nearBox));
+
+		objs.add(new Translate(new SUnion(sphere, box, 0.5), new Vector3d(0, 0, 3)));
 
 		var lightOrigin = new Vector3d(3, 3, -3);
 
