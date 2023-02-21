@@ -17,4 +17,43 @@ public class Union implements SDF
 	{
 		return Math.min(a.dist(p), b.dist(p));
 	}
+
+	@Override
+	public Vector3d getColor(Vector3d p)
+	{
+		if (a.dist(p) < b.dist(p))
+		{
+			return a.getColor(p);
+		}
+		else
+		{
+			return b.getColor(p);
+		}
+	}
+
+	@Override
+	public double getDiffuseRatio(Vector3d p)
+	{
+		if (a.dist(p) < b.dist(p))
+		{
+			return a.getDiffuseRatio(p);
+		}
+		else
+		{
+			return b.getDiffuseRatio(p);
+		}
+	}
+
+	@Override
+	public double getSpecularExp(Vector3d p)
+	{
+		if (a.dist(p) < b.dist(p))
+		{
+			return a.getSpecularExp(p);
+		}
+		else
+		{
+			return b.getSpecularExp(p);
+		}
+	}
 }

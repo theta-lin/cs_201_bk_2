@@ -23,6 +23,15 @@ public class RayMarcher
 		return normal;
 	}
 
+	private static Vector3d reflect(Vector3d v, Vector3d n)
+	{
+		var p = new Vector3d(n);
+		p.scale(-2 * v.dot(n));
+		var o = new Vector3d(v);
+		o.add(p);
+		return o;
+	}
+
 	private static class RayRes
 	{
 		Vector3d p;
@@ -79,10 +88,14 @@ public class RayMarcher
 		StdDraw.clear(StdDraw.BLACK);
 
 		var sphere = new Sphere(1);
-		var fbm = new FBM(sphere, 5, 1.0, 0.5,
-				          0.05, 0.1, 0.4,
-				          666);
-		objs.add(new Translate(fbm, new Vector3d(0, 0, 1.8)));
+		var fbm = new FBM(sphere, 8, 1.0, 0.5,
+				          0.07, 0.07, 0.28,
+				          666,
+						  new double[] {0.02, 0.01, 0.03, 0.02, 0.0},
+						  new double[] {0.01, 0.04, 0.01, 0.01, 0.0},
+						  new Vector3d[] {new Vector3d(0.91, 0.59, 0.48), new Vector3d(0.49, 0.99, 0), new Vector3d(0.13, 0.54, 0.13), new Vector3d(0.41, 0.41, 0.41), new Vector3d(1.0, 0.98, 0.98)});
+		var water = new Sphere(1.01, new Vector3d(0.15, 0.56, 1.0), 0.3, 2.5);
+		objs.add(new Translate(new Rotate(new Union(fbm, water), new Vector3d(Math.toRadians(45), 0, 0)), new Vector3d(0, 0, 1.8)));
 
 		//var box = new Translate(new Box(new Vector3d(0.4, 0.7, 0.5)), new Vector3d(0.6, -0.4, -0.3));
 
@@ -114,6 +127,8 @@ public class RayMarcher
 				var hit = ray(p, dir, Double.POSITIVE_INFINITY);
 				if (hit.obj != null)
 				{
+					var color = hit.obj.getColor(hit.p);
+
 					var lightDir = new Vector3d(lightOrigin);
 					lightDir.sub(hit.p);
 					double lightDist = lightDir.length();
@@ -131,11 +146,20 @@ public class RayMarcher
 					// Soft shadow by dimming the light according to the shortest distance to the light
 					// when travelling along the shadow ray.
 					final double shadowHardness = 10.0;
-					double intensity = 0.0;
-					if (lightHit.obj == null) intensity = Math.max(lightDir.dot(n), 0.0);
-					intensity *= Math.min(lightHit.shadow * shadowHardness, 1.0);
+					double diffuseInt = 0.0;
+					if (lightHit.obj == null) diffuseInt = Math.max(lightDir.dot(n), 0.0);
+					diffuseInt *= Math.min(lightHit.shadow * shadowHardness, 1.0);
+					diffuseInt *= hit.obj.getDiffuseRatio(hit.p);
 
-					StdDraw.setPenColor((int) (255 * intensity), (int) (255 * intensity), (int) (255 * intensity));
+					double specularInt = 0.0;
+					if (lightHit.obj == null) specularInt = Math.max(reflect(dir, n).dot(lightDir), 0.0);
+					specularInt = Math.pow(specularInt, hit.obj.getSpecularExp(hit.p));
+					specularInt *= 1.0 - hit.obj.getDiffuseRatio(hit.p);
+
+					color.scale(diffuseInt + specularInt);
+					color.clampMin(0.0);
+					color.clampMax(1.0);
+					StdDraw.setPenColor((int) (255 * color.x), (int) (255 * color.y), (int) (255 * color.z));
 					// StdDraw.setPenColor(Math.min(Math.max((int) ((n.x / 2 + 1) * 255), 0), 255), Math.min(Math.max((int) ((n.y / 2 + 1) * 255), 0), 255), 0);
 					//StdDraw.setPenColor(StdDraw.WHITE);
 					StdDraw.point(i, j);

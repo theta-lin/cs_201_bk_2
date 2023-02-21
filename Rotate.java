@@ -26,11 +26,34 @@ public class Rotate implements SDF
 		rot.mul(rotZ);
 	}
 
-	@Override
-	public double dist(Vector3d p)
+	public Vector3d getRot(Vector3d p)
 	{
 		var pRot = new Vector3d(p);
 		rot.transform(pRot);
-		return sdf.dist(pRot);
+		return pRot;
+	}
+
+	@Override
+	public double dist(Vector3d p)
+	{
+		return sdf.dist(getRot(p));
+	}
+
+	@Override
+	public Vector3d getColor(Vector3d p)
+	{
+		return sdf.getColor(getRot(p));
+	}
+
+	@Override
+	public double getDiffuseRatio(Vector3d p)
+	{
+		return sdf.getDiffuseRatio(getRot(p));
+	}
+
+	@Override
+	public double getSpecularExp(Vector3d p)
+	{
+		return sdf.getSpecularExp(getRot(p));
 	}
 }

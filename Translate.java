@@ -13,11 +13,34 @@ public class Translate implements SDF
 		this.trans = trans;
 	}
 
-	@Override
-	public double dist(Vector3d p)
+	public Vector3d getTrans(Vector3d p)
 	{
 		var pTrans = new Vector3d(p);
 		pTrans.sub(trans);
-		return sdf.dist(pTrans);
+		return pTrans;
+	}
+
+	@Override
+	public double dist(Vector3d p)
+	{
+		return sdf.dist(getTrans(p));
+	}
+
+	@Override
+	public Vector3d getColor(Vector3d p)
+	{
+		return sdf.getColor(getTrans(p));
+	}
+
+	@Override
+	public double getDiffuseRatio(Vector3d p)
+	{
+		return sdf.getDiffuseRatio(getTrans(p));
+	}
+
+	@Override
+	public double getSpecularExp(Vector3d p)
+	{
+		return sdf.getSpecularExp(getTrans(p));
 	}
 }
